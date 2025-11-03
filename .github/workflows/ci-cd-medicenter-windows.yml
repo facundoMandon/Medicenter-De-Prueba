@@ -1,0 +1,41 @@
+name: CI/CD Medicenter (Windows)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Publish Presentation project
+        run: dotnet publish .\Presentation\Medicenter.Presentation.csproj -c Release -o .\publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Medicenter-Publish
+          path: .\publish
