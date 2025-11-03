@@ -14,26 +14,33 @@ jobs:
   build-and-test:
     runs-on: windows-latest
     steps:
+      # 1️⃣ Checkout del repositorio
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ Configurar .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
 
+      # 3️⃣ Restaurar dependencias de toda la solución
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore .\backend\Medicenter\Medicenter.sln
 
+      # 4️⃣ Build de la solución
       - name: Build solution
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build .\backend\Medicenter\Medicenter.sln --configuration Release --no-restore
 
+      # 5️⃣ Ejecutar tests (si tenés proyectos de test, por ejemplo en backend\Medicenter.Tests)
       - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet test .\backend\Medicenter\Medicenter.sln --configuration Release --no-build --verbosity normal
 
+      # 6️⃣ Publicar proyecto Presentation
       - name: Publish Presentation project
-        run: dotnet publish .\Presentation\Medicenter.Presentation.csproj -c Release -o .\publish
+        run: dotnet publish .\backend\Medicenter\Presentation\Medicenter.Presentation.csproj -c Release -o .\publish
 
+      # 7️⃣ Guardar artefactos de build
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
